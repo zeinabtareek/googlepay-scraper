@@ -3,3 +3,4 @@ yolo_weights/*.pt filter=lfs diff=lfs merge=lfs -text
 yolo_weights/yolov9e-seg.pt filter=lfs diff=lfs merge=lfs -text
 ReCaptchaV2-DeepLearning-Solver/* filter=lfs diff=lfs merge=lfs -text
 ReCaptchaV2-DeepLearning-Solver/venv/**/*.dylib filter=lfs diff=lfs merge=lfs -text
+ReCaptchaV2-DeepLearning-Solver/venv/lib/python3.10/site-packages/torch/lib/*.dylib filter=lfs diff=lfs merge=lfs -text
