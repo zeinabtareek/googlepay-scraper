@@ -1,163 +1,3 @@
- 
-# import sys
-# import os
-# import time
-# import tempfile
-# import json
-# import shutil
-# import warnings
-# import argparse
-# from selenium import webdriver
-# from selenium.webdriver.chrome.options import Options as ChromeOptions
-# from selenium.webdriver.chrome.service import Service
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# import importlib
-# import sys
-# import time
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
- 
-
-# from selenium.common.exceptions import (
-#     TimeoutException, NoSuchElementException, StaleElementReferenceException, WebDriverException
-# )
-# from selenium.webdriver.common.action_chains import ActionChains
-# from selenium.webdriver.common.keys import Keys
-# try:
-#     from webdriver_manager.chrome import ChromeDriverManager
-#     HAS_WEBDRIVER_MANAGER = True
-# except Exception:
-#     HAS_WEBDRIVER_MANAGER = False
-# warnings.filterwarnings("ignore", category=UserWarning, module="urllib3")
-
- 
-# import importlib.util
- 
-# HAS_SOLVER = False
-# CaptchaSolver = None
-
- 
-
-# try:
-#     if importlib.util.find_spec("torch") is not None:
-#         sys.path.append("/Users/zeinabtarek/Downloads/scarping 3/scarping/ReCaptchaV2-DeepLearning-Solver")
-#         try:
-#             from solver import get_captcha_solver as _get_solver
-#             CaptchaSolver = _get_solver()
-#             HAS_SOLVER = True
-#         except ImportError:
-#             try:
-#                 from solver import CaptchaSolver as _CaptchaSolver
-#                 CaptchaSolver = _CaptchaSolver
-#                 HAS_SOLVER = True
-#             except Exception as e:
-#                 print(f"❌ Failed to import CaptchaSolver: {e}")
-#         except Exception as e:
-#             print(f"❌ Unexpected error during solver import: {e}")
-#     else:
-#         print("⚠️ Torch not installed. CaptchaSolver unavailable.")
-# except Exception as e:
-#     print(f"❌ Error initializing CaptchaSolver: {e}")
-
-# if HAS_SOLVER:
-#     print("✅ CaptchaSolver is ready!")
-# else:
-#     print("⚠️ CaptchaSolver is not available. Will require manual solve.")
-
-# # --- Initialize Selenium driver ---
-# chrome_options = ChromeOptions()
-# chrome_options.add_argument("--start-maximized")
-# # Add more options as needed
-# if HAS_WEBDRIVER_MANAGER:
-#     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-# else:
-#     driver = webdriver.Chrome(options=chrome_options)  # uses chromedriver in PATH
-
-# # Go to the login page
-# driver.get("https://accounts.google.com/signin")
-
-# # ---- Handle captcha OR go directly to password ----
-# for step in range(30):
-#     current_url = driver.current_url
-#     print(f"[{step}] Current URL: {current_url}")
-
-#     if "recaptcha" in current_url:
-#         print("🔎 Captcha challenge detected.")
-#         try:
-#             WebDriverWait(driver, 15).until(
-#                 EC.presence_of_element_located((By.CSS_SELECTOR, "iframe[src*='recaptcha']"))
-#             )
-
-#             if HAS_SOLVER:
-#                 solver = CaptchaSolver(driver)
-#                 solver.solve_captcha()
-#                 print("✅ Captcha solved automatically.")
-#             else:
-#                 print("⚠️ Manual captcha solving required. Waiting...")
-#                 WebDriverWait(driver, 300).until(
-#                     lambda d: "recaptcha" not in d.current_url
-#                 )
-
-#             # Click Next after captcha
-#             clicked = click_next(driver)
-#             if not clicked:
-#                 print("❌ All click attempts failed after captcha.")
-
-#         except Exception as e:
-#             print("⚠️ Error while solving captcha:", e)
-#             driver.save_screenshot("captcha_error.png")
-
-#         time.sleep(2)
-#         continue
-
-#     # If URL is password page
-#     if "signin/v2/challenge/pwd" in current_url:
-#         print("🔑 Password page detected. Proceeding...")
-#         break
-
-#     time.sleep(1)
-
-# # try:
-
-# #     # Check if torch is installed
-# #     if importlib.util.find_spec("torch") is not None:
-# #         # Add local solver repo to PYTHONPATH
-# #         sys.path.append("/Users/zeinabtarek/Downloads/scarping 3/scarping/ReCaptchaV2-DeepLearning-Solver")
-
-# #         try:
-# #             # Try importing lazy accessor
-# #             from solver import get_captcha_solver as _get_solver
-# #             CaptchaSolver = _get_solver()
-# #             HAS_SOLVER = True
-# #         except ImportError:
-# #             # Fallback import if accessor not present (older versions)
-# #             try:
-# #                 from solver import CaptchaSolver as _CaptchaSolver
-# #                 CaptchaSolver = _CaptchaSolver
-# #                 HAS_SOLVER = True
-# #             except Exception as e:
-# #                 print(f"❌ Failed to import CaptchaSolver: {e}")
-# #                 HAS_SOLVER = False
-# #         except Exception as e:
-# #             print(f"❌ Unexpected error during solver import: {e}")
-# #             HAS_SOLVER = False
-# #     else:
-# #         # Torch not installed, solver unavailable
-# #         HAS_SOLVER = False
-# # except Exception as e:
-# #     # Any top-level import errors
-# #     print(f"❌ Error initializing CaptchaSolver: {e}")
-# #     HAS_SOLVER = False
-
-# # Optional: report status
-# if HAS_SOLVER:
-#     print("✅ CaptchaSolver is ready!")
-# else:
-#     print("⚠️ CaptchaSolver is not available.")
-
 import sys
 import os
 import time
@@ -177,135 +17,46 @@ from selenium.common.exceptions import (
 )
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
-import importlib.util
+
+# Import the endpoint module
+from endpoint import initialize_endpoint, process_new_transaction, get_endpoint_stats, shutdown_endpoint
 
 try:
     from webdriver_manager.chrome import ChromeDriverManager
     HAS_WEBDRIVER_MANAGER = True
 except Exception:
     HAS_WEBDRIVER_MANAGER = False
-
 warnings.filterwarnings("ignore", category=UserWarning, module="urllib3")
 
-# ----------------------
-# Initialize Captcha Solver
-# ----------------------
+# 👇 Add solver repo to PYTHONPATH and try to import solver lazily.
+import importlib.util
+
+# The solver depends on heavy ML libraries (torch). Avoid importing the solver
+# package at module-import time inside the frozen exe unless those libraries are
+# actually available on the target system. Check for 'torch' first and only
+# attempt to import the solver when it is present.
 HAS_SOLVER = False
 CaptchaSolver = None
-
 try:
     if importlib.util.find_spec("torch") is not None:
-        sys.path.append("ReCaptchaV2-DeepLearning-Solver")
+        # Only add the local solver repo to path and import it when torch exists
+        sys.path.append(r"ReCaptchaV2-DeepLearning-Solver")
+        # Prefer the package-level accessor which performs a lazy import
         try:
             from solver import get_captcha_solver as _get_solver
             CaptchaSolver = _get_solver()
             HAS_SOLVER = True
-        except ImportError:
-            try:
-                from solver import CaptchaSolver as _CaptchaSolver
-                CaptchaSolver = _CaptchaSolver
-                HAS_SOLVER = True
-            except Exception as e:
-                print(f"❌ Failed to import CaptchaSolver: {e}")
-        except Exception as e:
-            print(f"❌ Unexpected error during solver import: {e}")
+        except Exception:
+            # Fallback import if accessor not present (older copies)
+            from solver import CaptchaSolver as _CaptchaSolver
+            CaptchaSolver = _CaptchaSolver
+            HAS_SOLVER = True
     else:
-        print("⚠️ Torch not installed. CaptchaSolver unavailable.")
-except Exception as e:
-    print(f"❌ Error initializing CaptchaSolver: {e}")
-
-print("✅ CaptchaSolver is ready!" if HAS_SOLVER else "⚠️ CaptchaSolver is not available. Manual solve may be required.")
-
-# ----------------------
-# Initialize Selenium driver
-# ----------------------
-chrome_options = ChromeOptions()
-chrome_options.add_argument("--start-maximized")
-if HAS_WEBDRIVER_MANAGER:
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
-else:
-    driver = webdriver.Chrome(options=chrome_options)  # uses chromedriver in PATH
-
-# ----------------------
-# Helper function to wait for element
-# ----------------------
-def wait_for_element(driver, by, value, timeout=5):
-    try:
-        return WebDriverWait(driver, timeout).until(
-            EC.presence_of_element_located((by, value))
-        )
-    except TimeoutException:
-        return None
-
-# ----------------------
-# Start Login Flow
-# ----------------------
-driver.get("https://accounts.google.com/signin")
-time.sleep(2)  # give the page a moment to load
-
-# --- Step 1: Enter email ---
-email_input = wait_for_element(driver, By.ID, "identifierId", timeout=15)
-if not email_input:
-    print("❌ Email input not found.")
-    driver.quit()
-    sys.exit(1)
-
-email_input.send_keys("your_email@gmail.com")
-driver.find_element(By.ID, "identifierNext").click()
-print("📧 Email submitted, waiting for next step...")
-
-# --- Step 2: Handle captcha OR password ---
-for step in range(30):
-    current_url = driver.current_url
-    print(f"[{step}] Current URL: {current_url}")
-
-    # If captcha detected
-    if "recaptcha" in current_url:
-        print("🔎 Captcha challenge detected.")
-        try:
-            captcha_iframe = wait_for_element(driver, By.CSS_SELECTOR, "iframe[src*='recaptcha']", timeout=15)
-            if captcha_iframe:
-                if HAS_SOLVER:
-                    solver = CaptchaSolver(driver)
-                    solver.solve_captcha()
-                    print("✅ Captcha solved automatically.")
-                else:
-                    print("⚠️ Manual captcha solving required. Waiting...")
-                    WebDriverWait(driver, 300).until(
-                        lambda d: not wait_for_element(d, By.CSS_SELECTOR, "iframe[src*='recaptcha']", timeout=2)
-                    )
-            # Optional: click next after captcha
-            try:
-                click_next(driver)
-            except Exception:
-                pass
-        except Exception as e:
-            print("⚠️ Error while solving captcha:", e)
-            driver.save_screenshot("captcha_error.png")
-        time.sleep(2)
-        continue
-
-    # If password page detected
-    if "signin/v2/challenge/pwd" in current_url:
-        print("🔑 Password page detected. Proceeding...")
-        password_input = wait_for_element(driver, By.NAME, "password", timeout=15)
-        if password_input:
-            password_input.send_keys("your_password")
-            driver.find_element(By.ID, "passwordNext").click()
-            print("✅ Password submitted, login flow complete.")
-        else:
-            print("❌ Password input not found, possibly blocked by captcha.")
-        break
-
-    time.sleep(1)
-
-# ----------------------
-# Optional: report CaptchaSolver status
-# ----------------------
-if HAS_SOLVER:
-    print("✅ CaptchaSolver ready and available.")
-else:
-    print("⚠️ CaptchaSolver not available, manual solve may be needed.")
+        # PyTorch not present — mark solver as unavailable without importing it.
+        HAS_SOLVER = False
+except Exception:
+    # Any import-time error should not crash the module import; keep solver disabled.
+    HAS_SOLVER = False
 
 
 # Helper to attempt runtime import of solver with diagnostics. Returns a class or None.
@@ -359,39 +110,39 @@ def save_user_config(email, password, pages):
     try:
         with open('user_config.json', 'w', encoding='utf-8') as f:
             json.dump(config, f, indent=2, ensure_ascii=False)
-        print(f"✅ Configuration saved to user_config.json")
+        print(f"Configuration saved to user_config.json")
         return True
     except Exception as e:
-        print(f"❌ Error saving config: {e}")
+        print(f"Error saving config: {e}")
         return False
 
 def get_user_input():
     """Get user input for email, password, and pages"""
     print("=" * 50)
-    print("🚀 Google Pay Scraper Setup")
+    print("Google Pay Scraper Setup with API Integration")
     print("=" * 50)
     
     # Load existing config
     saved_email, saved_password, saved_pages = load_user_config()
     
     if saved_email:
-        print(f"📧 Found saved email: {saved_email}")
+        print(f"Found saved email: {saved_email}")
         use_saved = input("Use saved configuration? (y/n): ").strip().lower()
         if use_saved == 'y':
             return saved_email, saved_password, saved_pages
     
     # Get new input
-    email = input("📧 Enter email address: ").strip()
+    email = input("Enter email address: ").strip()
     while not email or '@' not in email:
-        print("❌ Please enter a valid email address")
-        email = input("📧 Enter email address: ").strip()
+        print("Please enter a valid email address")
+        email = input("Enter email address: ").strip()
     
-    password = input("🔐 Enter password: ").strip()
+    password = input("Enter password: ").strip()
     while not password:
-        print("❌ Password cannot be empty")
-        password = input("🔐 Enter password: ").strip()
+        print("Password cannot be empty")
+        password = input("Enter password: ").strip()
     
-    pages_input = input("📄 Enter number of pages (default: 1): ").strip()
+    pages_input = input("Enter number of pages (default: 1): ").strip()
     try:
         pages = int(pages_input) if pages_input else 1
         if pages <= 0:
@@ -400,7 +151,7 @@ def get_user_input():
         pages = 1
     
     # Ask to save
-    save_config = input("💾 Save this configuration? (y/n): ").strip().lower()
+    save_config = input("Save this configuration? (y/n): ").strip().lower()
     if save_config == 'y':
         save_user_config(email, password, pages)
     
@@ -408,7 +159,7 @@ def get_user_input():
 
 def parse_command_line_args():
     """Parse command line arguments"""
-    parser = argparse.ArgumentParser(description='Google Pay Scraper with reCAPTCHA solver')
+    parser = argparse.ArgumentParser(description='Google Pay Scraper with reCAPTCHA solver and API integration')
     parser.add_argument('--email', type=str, help='Email address')
     parser.add_argument('--password', type=str, help='Password')
     parser.add_argument('--pages', type=int, default=1, help='Number of pages to scrape')
@@ -521,13 +272,13 @@ def handle_common_obstacles(driver):
         print(f"Error handling obstacles: {e}")
     
     if obstacles_handled:
-        print(f"🚧 Handled obstacles: {', '.join(obstacles_handled)}")
+        print(f"Handled obstacles: {', '.join(obstacles_handled)}")
     
     return len(obstacles_handled) > 0
 
 def click_next(driver):
     """Enhanced Next button clicker"""
-    print("🔄 Starting Next button detection and clicking...")
+    print("Starting Next button detection and clicking...")
     
     max_attempts = 5
     for attempt in range(max_attempts):
@@ -563,19 +314,19 @@ def click_next(driver):
                     
                     try:
                         ActionChains(driver).move_to_element(next_btn).click().perform()
-                        print(f"✅ Clicked Next using ActionChains (selector: {selector})")
+                        print(f"Clicked Next using ActionChains (selector: {selector})")
                         next_clicked = True
                         break
                     except Exception:
                         try:
                             driver.execute_script("arguments[0].click();", next_btn)
-                            print(f"✅ Clicked Next using JavaScript (selector: {selector})")
+                            print(f"Clicked Next using JavaScript (selector: {selector})")
                             next_clicked = True
                             break
                         except Exception:
                             try:
                                 next_btn.click()
-                                print(f"✅ Clicked Next directly (selector: {selector})")
+                                print(f"Clicked Next directly (selector: {selector})")
                                 next_clicked = True
                                 break
                             except Exception as e:
@@ -597,7 +348,7 @@ def click_next(driver):
                                     driver.execute_script("arguments[0].scrollIntoView(true);", next_btn)
                                     time.sleep(0.5)
                                     driver.execute_script("arguments[0].click();", next_btn)
-                                    print(f"✅ Clicked Next in iframe {idx} (selector: {selector})")
+                                    print(f"Clicked Next in iframe {idx} (selector: {selector})")
                                     next_clicked = True
                                     break
                             except Exception:
@@ -617,10 +368,10 @@ def click_next(driver):
             time.sleep(3)
             return True
         
-        print(f"❌ Next button not found in attempt {attempt + 1}")
+        print(f"Next button not found in attempt {attempt + 1}")
         time.sleep(2)
     
-    print("⚠️ Could not find Next button after all attempts")
+    print("Could not find Next button after all attempts")
     return False
 
 def wait_for_primary_action_enabled(driver, timeout=30, poll=0.5):
@@ -660,7 +411,7 @@ def is_on_transactions_page(driver):
 
 def navigate_to_transactions_page(driver):
     """Navigate to transactions page after successful login"""
-    print("🎯 Navigating to transactions page...")
+    print("Navigating to transactions page...")
     
     # List of possible transaction page URLs to try
     transaction_urls = [
@@ -673,20 +424,20 @@ def navigate_to_transactions_page(driver):
     
     for url in transaction_urls:
         try:
-            print(f"🔗 Trying URL: {url}")
+            print(f"Trying URL: {url}")
             driver.get(url)
             time.sleep(3)
             
             if is_on_transactions_page(driver):
-                print(f"✅ Successfully reached transactions page: {url}")
+                print(f"Successfully reached transactions page: {url}")
                 return True
                 
         except Exception as e:
-            print(f"❌ Failed to load {url}: {e}")
+            print(f"Failed to load {url}: {e}")
             continue
     
     # If direct URLs fail, try to find activity/transaction links on current page
-    print("🔍 Looking for transaction/activity links on current page...")
+    print("Looking for transaction/activity links on current page...")
     try:
         # Look for various activity/transaction links
         activity_links = driver.find_elements(By.XPATH, 
@@ -698,20 +449,20 @@ def navigate_to_transactions_page(driver):
             try:
                 if link.is_displayed():
                     driver.execute_script("arguments[0].click();", link)
-                    print(f"✅ Clicked activity/transaction link")
+                    print(f"Clicked activity/transaction link")
                     time.sleep(3)
                     
                     if is_on_transactions_page(driver):
-                        print("✅ Successfully reached transactions page via link")
+                        print("Successfully reached transactions page via link")
                         return True
                     break
             except Exception:
                 continue
                 
     except Exception as e:
-        print(f"❌ Error finding activity links: {e}")
+        print(f"Error finding activity links: {e}")
     
-    print("⚠️ Could not navigate to transactions page")
+    print("Could not navigate to transactions page")
     return False
 
 def auto_login_if_needed(driver, email, password):
@@ -720,13 +471,13 @@ def auto_login_if_needed(driver, email, password):
     
     # Check if we're on a login page
     if any(keyword in current_url.lower() for keyword in ['signin', 'login', 'accounts.google.com']):
-        print("🔄 Detected redirect to login page. Auto-filling credentials...")
+        print("Detected redirect to login page. Auto-filling credentials...")
         
         # Handle email input
         try:
             email_input = driver.find_element(By.ID, "identifierId")
             if email_input.is_displayed():
-                print("📧 Auto-filling email...")
+                print("Auto-filling email...")
                 email_input.clear()
                 for ch in email:
                     email_input.send_keys(ch)
@@ -747,7 +498,7 @@ def auto_login_if_needed(driver, email, password):
                 EC.presence_of_element_located((By.NAME, "Passwd"))
             )
             if password_input.is_displayed():
-                print("🔑 Auto-filling password...")
+                print("Auto-filling password...")
                 password_input.clear()
                 password_input.send_keys(password)
                 
@@ -760,34 +511,141 @@ def auto_login_if_needed(driver, email, password):
         return True
     return False
 
+def extract_transaction_data(row_element):
+    """Extract transaction data from a row element"""
+    try:
+        transaction = {}
+        
+        # Try to extract amount
+        amount_selectors = [
+            ".amount", "[data-amount]", ".transaction-amount", 
+            ".money", ".currency", "[class*='amount']"
+        ]
+        
+        for selector in amount_selectors:
+            try:
+                amount_elem = row_element.find_element(By.CSS_SELECTOR, selector)
+                amount_text = amount_elem.text.strip()
+                if amount_text:
+                    transaction['amount'] = amount_text
+                    break
+            except:
+                continue
+        
+        # Try to extract description/remarks
+        desc_selectors = [
+            ".description", ".transaction-desc", ".memo", 
+            "[data-description]", "[class*='desc']", ".details"
+        ]
+        
+        for selector in desc_selectors:
+            try:
+                desc_elem = row_element.find_element(By.CSS_SELECTOR, selector)
+                desc_text = desc_elem.text.strip()
+                if desc_text:
+                    transaction['description'] = desc_text
+                    break
+            except:
+                continue
+        
+        # Try to extract date
+        date_selectors = [
+            ".date", ".transaction-date", "[data-date]", 
+            ".timestamp", "[class*='date']", "time"
+        ]
+        
+        for selector in date_selectors:
+            try:
+                date_elem = row_element.find_element(By.CSS_SELECTOR, selector)
+                date_text = date_elem.text.strip()
+                if date_text:
+                    transaction['date'] = date_text
+                    break
+            except:
+                continue
+        
+        # Try to extract UTR/reference
+        utr_selectors = [
+            ".utr", ".reference", "[data-utr]", ".transaction-id",
+            "[class*='ref']", "[class*='utr']"
+        ]
+        
+        for selector in utr_selectors:
+            try:
+                utr_elem = row_element.find_element(By.CSS_SELECTOR, selector)
+                utr_text = utr_elem.text.strip()
+                if utr_text:
+                    transaction['utr'] = utr_text
+                    break
+            except:
+                continue
+        
+        # Extract account info if available
+        account_selectors = [
+            ".account", "[data-account]", ".account-number", 
+            "[class*='account']"
+        ]
+        
+        for selector in account_selectors:
+            try:
+                account_elem = row_element.find_element(By.CSS_SELECTOR, selector)
+                account_text = account_elem.text.strip()
+                if account_text:
+                    transaction['account_number'] = account_text
+                    break
+            except:
+                continue
+        
+        # If no specific account found, use a default
+        if 'account_number' not in transaction:
+            transaction['account_number'] = 'google_pay_account'
+        
+        # Add timestamp
+        from datetime import datetime
+        transaction['scraped_at'] = datetime.now().isoformat()
+        
+        # Only return if we have at least amount
+        if 'amount' in transaction:
+            return transaction
+        
+    except Exception as e:
+        print(f"Error extracting transaction data: {e}")
+    
+    return None
+
 # CONFIG
 REFRESH_INTERVAL = 30  # seconds
 
 def restart_driver(chrome_options):
     """Restart Chrome driver with error handling"""
-    print("🔄 Restarting Chrome driver...")
+    print("Restarting Chrome driver...")
     try:
         if HAS_WEBDRIVER_MANAGER:
             service = Service(ChromeDriverManager().install())
             driver = webdriver.Chrome(service=service, options=chrome_options)
         else:
-            print("⚠️ webdriver-manager not installed. Relying on chromedriver in PATH.")
+            print("webdriver-manager not installed. Relying on chromedriver in PATH.")
             driver = webdriver.Chrome(options=chrome_options)
         
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-        print("✅ Chrome driver restarted successfully")
+        print("Chrome driver restarted successfully")
         return driver
     except Exception as e:
-        print(f"❌ Failed to restart driver: {e}")
+        print(f"Failed to restart driver: {e}")
         return None
 
 def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = True):
     driver = None
     chrome_options = None
+    
+    # Initialize the endpoint system
+    endpoint_client = initialize_endpoint()
+    
     try:
-        print(f"🚀 Starting scraper for: {email}")
-        print(f"📄 Pages to scrape: {pages}")
-        print(f"🤖 Auto-bypass enabled: {auto_bypass}")
+        print(f"Starting scraper for: {email}")
+        print(f"Pages to scrape: {pages}")
+        print(f"Auto-bypass enabled: {auto_bypass}")
+        print("API Integration: ENABLED")
         
         chrome_options = ChromeOptions()
         chrome_options.add_argument("--disable-blink-features=AutomationControlled")
@@ -815,7 +673,7 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
             service = Service(ChromeDriverManager().install())
             driver = webdriver.Chrome(service=service, options=chrome_options)
         else:
-            print("⚠️ webdriver-manager not installed. Relying on chromedriver in PATH.")
+            print("webdriver-manager not installed. Relying on chromedriver in PATH.")
             driver = webdriver.Chrome(options=chrome_options)
         
         driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
@@ -824,16 +682,16 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
         max_retries = 3
         for attempt in range(1, max_retries + 1):
             try:
-                print(f"🌐 Loading Google signin page (attempt {attempt}/{max_retries})")
+                print(f"Loading Google signin page (attempt {attempt}/{max_retries})")
                 driver.get("https://accounts.google.com/signin/v2/identifier")
                 time.sleep(3)
                 
                 if is_on_transactions_page(driver):
-                    print("➡️ Already logged in - skipping login flow.")
+                    print("Already logged in - skipping login flow.")
                     break
                 break
             except WebDriverException as e:
-                print(f"⚠️ Failed to load page (attempt {attempt}/{max_retries}): {e}")
+                print(f"Failed to load page (attempt {attempt}/{max_retries}): {e}")
                 if 'ERR_CONNECTION_TIMED_OUT' in str(e):
                     print(" Hint: network timeout. Check your internet connection.")
                 if attempt == max_retries:
@@ -843,14 +701,14 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
         # Login process
         try:
             if is_on_transactions_page(driver):
-                print("➡️ Already on transactions/pay page; skipping email entry.")
+                print("Already on transactions/pay page; skipping email entry.")
             else:
                 # Enter email
-                print("📧 Looking for email input field...")
+                print("Looking for email input field...")
                 email_input = WebDriverWait(driver, 15).until(
                     EC.presence_of_element_located((By.ID, "identifierId"))
                 )
-                print("✉️ Entering email...")
+                print("Entering email...")
                 email_input.clear()
                 for ch in email:
                     email_input.send_keys(ch)
@@ -859,10 +717,10 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                 time.sleep(2)
                 
                 # Click Next after email
-                print("🔄 Attempting to click Next after email...")
+                print("Attempting to click Next after email...")
                 next_success = click_next(driver)
                 if not next_success:
-                    print("⚠️ Could not click Next, trying Enter key...")
+                    print("Could not click Next, trying Enter key...")
                     email_input.send_keys(Keys.RETURN)
                 
                 time.sleep(4)
@@ -883,18 +741,18 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                 print(f"[{step}] Current URL: {current_url}")
                 
                 if is_on_transactions_page(driver):
-                    print("➡️ Transactions page detected - proceeding.")
+                    print("Transactions page detected - proceeding.")
                     break
 
                 if "recaptcha" in current_url:
-                    print("🔎 Captcha challenge detected.")
+                    print("Captcha challenge detected.")
                     try:
                         WebDriverWait(driver, 15).until(
                             EC.presence_of_element_located((By.CSS_SELECTOR, "iframe[src*='recaptcha']"))
                         )
                         
                         # Use ReCaptchaV2-DeepLearning-Solver (lazy / optional)
-                        print("🤖 Attempting to use ReCaptchaV2-DeepLearning-Solver (if available)...")
+                        print("Attempting to use ReCaptchaV2-DeepLearning-Solver (if available)...")
                         # Load the solver class defensively and log import problems to developer log
                         solver_cls = None
                         if HAS_SOLVER and CaptchaSolver is not None and callable(CaptchaSolver):
@@ -903,7 +761,7 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                             solver_cls = load_solver_class_devlog()
 
                         if not solver_cls:
-                            print("⚠️ Captcha auto-solver is not available on this system. Please solve the captcha manually.")
+                            print("Captcha auto-solver is not available on this system. Please solve the captcha manually.")
                         else:
                             # Instantiate and run solver with runtime error handling
                             try:
@@ -911,7 +769,7 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                                 if not hasattr(solver, 'solve_captcha') or not callable(getattr(solver, 'solve_captcha')):
                                     raise RuntimeError('Loaded solver does not have a callable solve_captcha()')
                                 solver.solve_captcha()
-                                print("✅ Captcha solved using DeepLearning solver.")
+                                print("Captcha solved using DeepLearning solver.")
                             except Exception:
                                 # Write full traceback to temp log for diagnostics and print a friendly message
                                 try:
@@ -923,45 +781,45 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                                         traceback.print_exc(file=f)
                                 except Exception:
                                     pass
-                                print("⚠️ Error while solving captcha (solver raised an exception). See developer log for details.")
+                                print("Error while solving captcha (solver raised an exception). See developer log for details.")
                                 try:
                                     driver.save_screenshot("captcha_error.png")
                                 except Exception:
                                     pass
 
                         # Wait for the solution to register
-                        print("⏳ Waiting for captcha solution to register...")
+                        print("Waiting for captcha solution to register...")
                         time.sleep(5)
                         
                         # Check if we moved to next page automatically
                         new_url = driver.current_url
                         if new_url != current_url and "recaptcha" not in new_url:
-                            print("✅ Page progressed automatically after captcha solve!")
+                            print("Page progressed automatically after captcha solve!")
                             continue
                         
-                        print("🔄 Attempting to click Next after captcha solve...")
+                        print("Attempting to click Next after captcha solve...")
                         clicked = click_next(driver)
                         if not clicked:
-                            print("❌ All click attempts failed after captcha.")
+                            print("All click attempts failed after captcha.")
                             try:
                                 driver.find_element(By.TAG_NAME, "body").send_keys(Keys.RETURN)
-                                print("⌨️ Tried pressing Enter key")
+                                print("Tried pressing Enter key")
                                 time.sleep(2)
                             except:
                                 pass
                         else:
-                            print("✅ Successfully clicked Next after captcha solve!")
+                            print("Successfully clicked Next after captcha solve!")
                             
                         time.sleep(3)
                         final_url = driver.current_url
                         if final_url != current_url:
-                            print(f"✅ URL changed from captcha page: {final_url}")
+                            print(f"URL changed from captcha page: {final_url}")
                             continue
                         else:
-                            print("⚠️ Still on captcha page, continuing...")
+                            print("Still on captcha page, continuing...")
 
                     except Exception as e:
-                        print("⚠️ Error while solving captcha:", e)
+                        print("Error while solving captcha:", e)
                         driver.save_screenshot("captcha_error.png")
                         try:
                             click_next(driver)
@@ -973,7 +831,7 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                 
                 # Handle password page
                 if "challenge/pwd" in current_url or "signin/v2/challenge/pwd" in current_url:
-                    print("🔑 Password page reached.")
+                    print("Password page reached.")
                     break
                 
                 handle_common_obstacles(driver)
@@ -981,38 +839,38 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
             
             # Enter password
             try:
-                print("🔍 Looking for password input field...")
+                print("Looking for password input field...")
                 handle_passkey_prompt(driver)
                 
                 password_input = WebDriverWait(driver, 15).until(
                     EC.presence_of_element_located((By.NAME, "Passwd"))
                 )
-                print("🔑 Entering password...")
+                print("Entering password...")
                 password_input.clear()
                 password_input.send_keys(password)
                 
                 time.sleep(2)
                 
-                print("🔄 Attempting to click Next after password...")
+                print("Attempting to click Next after password...")
                 next_success = click_next(driver)
                 if not next_success:
-                    print("⚠️ Could not click Next, trying Enter key...")
+                    print("Could not click Next, trying Enter key...")
                     password_input.send_keys(Keys.RETURN)
                 
                 time.sleep(5)
                 handle_common_obstacles(driver)
                 
             except TimeoutException:
-                print("⚠️ Password input not found - might already be logged in.")
+                print("Password input not found - might already be logged in.")
             except Exception as e:
-                print(f"⚠️ Error during password entry: {e}")
+                print(f"Error during password entry: {e}")
         
         except Exception as e:
             print(f"Login process error: {e}")
             handle_passkey_prompt(driver)
         
         # Wait for login to complete and navigate to transactions page
-        print("⏳ Waiting for login to complete...")
+        print("Waiting for login to complete...")
         time.sleep(5)
         
         # Navigate to transactions page after successful login
@@ -1020,7 +878,7 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
             navigate_to_transactions_page(driver)
         
         # Auto-refresh loop with auto-login capability and crash recovery
-        print("🔁 Starting auto-refresh loop on Transactions page...")
+        print("Starting auto-refresh loop on Transactions page with API integration...")
         collected_payins = []
         refresh_count = 0
         consecutive_failures = 0
@@ -1029,19 +887,19 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
         try:
             while True:
                 refresh_count += 1
-                print(f"\n🔄 Refresh #{refresh_count} at {time.strftime('%Y-%m-%d %H:%M:%S')}")
+                print(f"\nRefresh #{refresh_count} at {time.strftime('%Y-%m-%d %H:%M:%S')}")
                 
                 try:
                     # Check if driver is still alive
                     try:
                         _ = driver.current_url
                     except Exception as e:
-                        print(f"⚠️ Driver connection lost: {e}")
+                        print(f"Driver connection lost: {e}")
                         raise WebDriverException("Driver connection lost")
                     
                     # Check if we got redirected to login and auto-login if needed
                     if auto_login_if_needed(driver, email, password):
-                        print("🔄 Auto-login completed. Navigating back to transactions...")
+                        print("Auto-login completed. Navigating back to transactions...")
                         time.sleep(3)
                         if not is_on_transactions_page(driver):
                             navigate_to_transactions_page(driver)
@@ -1058,7 +916,7 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                     
                     # Check if we're still on transactions page
                     if not is_on_transactions_page(driver):
-                        print("⚠️ Not on transactions page. Attempting to navigate...")
+                        print("Not on transactions page. Attempting to navigate...")
                         navigate_to_transactions_page(driver)
                     
                     # Look for transaction elements
@@ -1071,9 +929,9 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                                 EC.presence_of_element_located((By.CSS_SELECTOR, "[data-testid*='transaction']"))
                             )
                         )
-                        print(f"✅ Transactions page refreshed successfully")
+                        print(f"Transactions page refreshed successfully")
                     except TimeoutException:
-                        print("⚠️ Transaction elements not found, but continuing...")
+                        print("Transaction elements not found, but continuing...")
                     
                     # Find transaction rows
                     rows = []
@@ -1092,10 +950,10 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                         for selector in selectors:
                             rows = driver.find_elements(By.CSS_SELECTOR, selector)
                             if rows:
-                                print(f"📊 Found {len(rows)} transaction elements using selector: {selector}")
+                                print(f"Found {len(rows)} transaction elements using selector: {selector}")
                                 break
                     except Exception as e:
-                        print(f"❌ Error finding transaction rows: {e}")
+                        print(f"Error finding transaction rows: {e}")
                         rows = []
                     
                     if not rows:
@@ -1104,40 +962,47 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                             container = driver.find_element(By.TAG_NAME, 'body')
                             rows = container.find_elements(By.TAG_NAME, 'tr')
                             if rows:
-                                print(f"📊 Fallback: Found {len(rows)} table rows")
+                                print(f"Fallback: Found {len(rows)} table rows")
                         except Exception:
                             rows = []
                     
-                    # Parse transactions if parser available
-                    try:
-                        from gpay_parser import from_selenium_rows
-                        parsed = from_selenium_rows(rows)
-                        parsed = [p for p in parsed if p.get('amount')]
+                    # Process transactions with API integration
+                    new_transactions = 0
+                    for row in rows:
+                        try:
+                            transaction_data = extract_transaction_data(row)
+                            if transaction_data:
+                                # Check if we already processed this transaction
+                                transaction_key = f"{transaction_data.get('amount', '')}_{transaction_data.get('date', '')}_{transaction_data.get('account_number', '')}"
+                                
+                                if transaction_key not in [t.get('key') for t in collected_payins]:
+                                    transaction_data['key'] = transaction_key
+                                    collected_payins.append(transaction_data)
+                                    new_transactions += 1
+                                    
+                                    # Send to API in real-time
+                                    process_new_transaction(transaction_data)
+                                    print(f"Processed new transaction: {transaction_data.get('amount', 'N/A')}")
                         
-                        # Add new transactions to collection
-                        new_transactions = 0
-                        for p in parsed:
-                            if p not in collected_payins:
-                                collected_payins.append(p)
-                                new_transactions += 1
-                        
-                        print(f"💰 Found {len(parsed)} transactions this refresh")
-                        if new_transactions > 0:
-                            print(f"🆕 Added {new_transactions} new transactions")
-                        print(f"📈 Total collected: {len(collected_payins)} transactions")
-                        
-                    except ImportError:
-                        print("📋 gpay_parser not available - raw data collection only")
-                        print(f"📊 Found {len(rows)} transaction elements")
-                    except Exception as e:
-                        print(f"❌ Error parsing transactions: {e}")
+                        except Exception as e:
+                            print(f"Error processing transaction row: {e}")
+                            continue
+                    
+                    print(f"Found {len(rows)} transaction elements this refresh")
+                    if new_transactions > 0:
+                        print(f"Added {new_transactions} new transactions")
+                    print(f"Total collected: {len(collected_payins)} transactions")
+                    
+                    # Show API statistics
+                    stats = get_endpoint_stats()
+                    print(f"API Stats: {stats.get('sent_transactions', 0)} sent, {stats.get('success_rate', 0):.1f}% success rate")
                         
                 except (WebDriverException, TimeoutException) as driver_error:
                     consecutive_failures += 1
-                    print(f"❌ Driver error (attempt {consecutive_failures}/{max_failures}): {str(driver_error)[:100]}...")
+                    print(f"Driver error (attempt {consecutive_failures}/{max_failures}): {str(driver_error)[:100]}...")
                     
                     if consecutive_failures >= max_failures:
-                        print(f"🔧 Too many consecutive failures. Restarting browser...")
+                        print(f"Too many consecutive failures. Restarting browser...")
                         
                         # Close current driver
                         try:
@@ -1148,11 +1013,11 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                         # Restart driver
                         driver = restart_driver(chrome_options)
                         if not driver:
-                            print("💥 Failed to restart driver. Exiting...")
+                            print("Failed to restart driver. Exiting...")
                             break
                         
                         # Re-login and navigate to transactions
-                        print("🔑 Re-authenticating after driver restart...")
+                        print("Re-authenticating after driver restart...")
                         try:
                             # Navigate to sign-in
                             driver.get("https://accounts.google.com/signin/v2/identifier")
@@ -1167,22 +1032,22 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                                 navigate_to_transactions_page(driver)
                                 
                             consecutive_failures = 0  # Reset counter
-                            print("✅ Successfully restarted and re-authenticated")
+                            print("Successfully restarted and re-authenticated")
                             
                         except Exception as restart_error:
-                            print(f"❌ Failed to re-authenticate: {restart_error}")
+                            print(f"Failed to re-authenticate: {restart_error}")
                             break
                     else:
-                        print(f"⏳ Waiting 10 seconds before retry...")
+                        print(f"Waiting 10 seconds before retry...")
                         time.sleep(10)
                         continue
                         
                 except Exception as general_error:
-                    print(f"❌ General error during refresh: {general_error}")
+                    print(f"General error during refresh: {general_error}")
                     consecutive_failures += 1
                     
                     if consecutive_failures >= max_failures:
-                        print("🛑 Too many consecutive errors. Stopping...")
+                        print("Too many consecutive errors. Stopping...")
                         break
                 
                 # Save snapshot of collected data
@@ -1192,7 +1057,8 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                         'refresh_count': refresh_count,
                         'consecutive_failures': consecutive_failures,
                         'total_transactions': len(collected_payins),
-                        'transactions': collected_payins
+                        'transactions': collected_payins,
+                        'api_stats': get_endpoint_stats()
                     }
                     with open('payins_snapshot.json', 'w', encoding='utf-8') as f:
                         json.dump(snapshot_data, f, ensure_ascii=False, indent=2)
@@ -1202,41 +1068,48 @@ def run_scraper(email: str, password: str, pages: int = 1, auto_bypass: bool = T
                         backup_filename = f"payins_backup_{time.strftime('%Y%m%d_%H%M%S')}.json"
                         with open(backup_filename, 'w', encoding='utf-8') as f:
                             json.dump(snapshot_data, f, ensure_ascii=False, indent=2)
-                        print(f"💾 Backup saved: {backup_filename}")
+                        print(f"Backup saved: {backup_filename}")
                         
                 except Exception as e:
-                    print(f"⚠️ Error saving snapshot: {e}")
+                    print(f"Error saving snapshot: {e}")
                 
                 # Wait before next refresh
-                print(f"⏰ Waiting {REFRESH_INTERVAL} seconds before next refresh...")
+                print(f"Waiting {REFRESH_INTERVAL} seconds before next refresh...")
                 time.sleep(REFRESH_INTERVAL)
                 
         except KeyboardInterrupt:
-            print("\n🛑 Auto-refresh stopped by user.")
-            print(f"📊 Final stats: {len(collected_payins)} total transactions collected")
+            print("\nAuto-refresh stopped by user.")
+            print(f"Final stats: {len(collected_payins)} total transactions collected")
+            
+            # Show final API stats
+            final_stats = get_endpoint_stats()
+            print(f"Final API stats: {final_stats}")
             
             # Save final export
             try:
                 export_transactions_for_upload(collected_payins)
             except Exception as e:
-                print(f"⚠️ Error saving final export: {e}")
+                print(f"Error saving final export: {e}")
             
     except Exception as e:
         import traceback
-        print("💥 Unhandled exception:")
+        print("Unhandled exception:")
         traceback.print_exc()
         
         # Try to save whatever data we have
         try:
             if 'collected_payins' in locals() and collected_payins:
                 export_transactions_for_upload(collected_payins, 'emergency_payins.json')
-                print(f"💾 Emergency save completed: {len(collected_payins)} transactions")
+                print(f"Emergency save completed: {len(collected_payins)} transactions")
         except Exception:
             pass
             
     finally:
+        # Shutdown endpoint system
+        shutdown_endpoint()
+        
         if driver:
-            print("🔒 Closing browser...")
+            print("Closing browser...")
             driver.quit()
 
 # Helper to export transactions
@@ -1245,12 +1118,13 @@ def export_transactions_for_upload(payins, out_path='payins.json'):
     export_data = {
         'export_timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
         'total_count': len(payins),
-        'transactions': payins
+        'transactions': payins,
+        'api_stats': get_endpoint_stats()
     }
     
     with open(out_path, 'w', encoding='utf-8') as f:
         json.dump(export_data, f, ensure_ascii=False, indent=2)
-    print(f"💾 Saved {len(payins)} transaction(s) to {out_path}")
+    print(f"Saved {len(payins)} transaction(s) to {out_path}")
 
 if __name__ == "__main__":
     args = parse_command_line_args()
@@ -1270,7 +1144,7 @@ if __name__ == "__main__":
             pages = int(data.get('pages', 1))
             auto_bypass = data.get('auto_bypass', True)
         except Exception as e:
-            print(f"❌ Invalid JSON data: {e}")
+            print(f"Invalid JSON data: {e}")
             sys.exit(1)
     elif args.email and args.password:
         # Command line arguments
@@ -1289,16 +1163,17 @@ if __name__ == "__main__":
         auto_bypass = True
     
     if email and password:
-        print(f"\n🚀 Starting Enhanced Google Pay Scraper")
-        print(f"📧 Email: {email}")
-        print(f"🔐 Password: {'*' * len(password)}")
-        print(f"📄 Pages: {pages}")
-        print(f"🤖 Auto-bypass: {auto_bypass}")
-        print(f"🔁 Auto-refresh: Every {REFRESH_INTERVAL} seconds")
-        print(f"🔄 Auto-login: Enabled")
+        print(f"\nStarting Enhanced Google Pay Scraper with API Integration")
+        print(f"Email: {email}")
+        print(f"Password: {'*' * len(password)}")
+        print(f"Pages: {pages}")
+        print(f"Auto-bypass: {auto_bypass}")
+        print(f"Auto-refresh: Every {REFRESH_INTERVAL} seconds")
+        print(f"Auto-login: Enabled")
+        print(f"API Integration: ENABLED")
         print("-" * 50)
         
         run_scraper(email, password, pages, auto_bypass)
     else:
-        print("❌ No valid credentials provided. Exiting...")
+        print("No valid credentials provided. Exiting...")
         sys.exit(1)
