@@ -1,3 +1,4 @@
 yolo_weights/*.pt filter=lfs diff=lfs merge=lfs -text
 *.pt filter=lfs diff=lfs merge=lfs -text
 yolo_weights/yolov9e-seg.pt filter=lfs diff=lfs merge=lfs -text
+ReCaptchaV2-DeepLearning-Solver/* filter=lfs diff=lfs merge=lfs -text
