@@ -1,7 +1,7 @@
 {
-  "timestamp": "2025-09-28 02:09:27",
-  "refresh_count": 1,
-  "consecutive_failures": 1,
+  "timestamp": "2025-09-28 08:20:17",
+  "refresh_count": 21,
+  "consecutive_failures": 0,
   "total_transactions": 0,
   "transactions": []
 }

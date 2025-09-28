@@ -1,401 +1,163 @@
+ 
 # import sys
 # import os
 # import time
 # import tempfile
+# import json
+# import shutil
+# import warnings
+# import argparse
 # from selenium import webdriver
+# from selenium.webdriver.chrome.options import Options as ChromeOptions
 # from selenium.webdriver.chrome.service import Service
-# from selenium.webdriver.chrome.options import Options
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import WebDriverWait
 # from selenium.webdriver.support import expected_conditions as EC
-# from webdriver_manager.chrome import ChromeDriverManager
-# from selenium.webdriver.chrome.options import Options
-
-# # 👇 Add solver repo to PYTHONPATH
-# sys.path.append("/Users/zeinabtarek/ReCaptchaV2-DeepLearning-Solver")
-
-# from solver import CaptchaSolver
-
-# EMAIL = "ashish73379@gmail.com"
-# # USER_DATA_DIR = "/Users/zeinabtarek/Library/Application Support/Google/Chrome/Default"
-# USER_DATA_DIR = tempfile.mkdtemp()  # temporary fresh Chrome profile every run
-
-# URL = "https://accounts.google.com/signin/v2/identifier"
-
-# opts = Options()
-# opts.add_argument(f"--user-data-dir={USER_DATA_DIR}")
-# opts.add_argument("--disable-blink-features=AutomationControlled")
-# opts.add_experimental_option("excludeSwitches", ["enable-automation"])
-# opts.add_experimental_option("useAutomationExtension", False)
-
-# service = Service(ChromeDriverManager().install())
-# driver = webdriver.Chrome(service=service, options=opts)
-# wait = WebDriverWait(driver, 30)
-
-# try:
-#     driver.get(URL)
-
-#     # Enter email
-#     email_input = wait.until(EC.presence_of_element_located((By.ID, "identifierId")))
-#     email_input.clear()
-#     for char in EMAIL:
-#         email_input.send_keys(char)
-#         time.sleep(0.2)
-
-#     # Click Next
-#     next_button = wait.until(EC.element_to_be_clickable(
-#         (By.XPATH, "//span[text()='Next']/parent::button")
-#     ))
-#     next_button.click()
-#     time.sleep(2)
-
-#     # ---- SOLVE RECAPTCHA ----
- 
-#     try:
-#         time.sleep(3)
-#         solver = CaptchaSolver(driver, detector_weight="yolo_weights/yolov9e-seg.pt")
-
-#         if solver.is_captcha():
-#             print("Captcha detected, solving with YOLO model…")
-#             solver.solve_captcha()
-#             print("Captcha solved ✅") 
-#             try:
-                
-#              # wait until the DOM refreshes and the Next button reappears
-#                 next_btn_after_captcha = wait.until(
-#                     EC.presence_of_element_located((By.ID, "identifierNext"))
-#                 )
-
-#                 # wait until it's visible and enabled
-#                 wait.until(EC.element_to_be_clickable((By.ID, "identifierNext")))
-
-#                 driver.execute_script("arguments[0].click();", next_btn_after_captcha)
-#                 print("Clicked Next button after captcha ✅")
-
-#             except Exception as e:
-#                 print("Failed to click Next button after captcha:", e)
-
-#         else:
-#             print("No captcha detected")
-
-#     except Exception as e:
-#         print("Error solving captcha:", e)
-
-#     # ---- CONTINUE TO PASSWORD / 2FA ----
-#     input("Email entered. Proceed manually for password/2FA if required.")
-
-# finally:
-#     pass
-#     # driver.quit()  # keep open
-
-######################## ;; in the example below I'm using a temp code to click the button of next without solving the captcha 
-
-
+# import importlib
 # import sys
 # import time
-# import tempfile
-# from selenium import webdriver
-# from selenium.webdriver.chrome.service import Service
-# from selenium.webdriver.chrome.options import Options
 # from selenium.webdriver.common.by import By
 # from selenium.webdriver.support.ui import WebDriverWait
 # from selenium.webdriver.support import expected_conditions as EC
-# from webdriver_manager.chrome import ChromeDriverManager
+ 
 
-# EMAIL = "ashish73379@gmail.com"
-# USER_DATA_DIR = tempfile.mkdtemp()  # temporary fresh Chrome profile
-# URL = "https://accounts.google.com/signin/v2/identifier"
-
-# opts = Options()
-# opts.add_argument(f"--user-data-dir={USER_DATA_DIR}")
-# opts.add_argument("--disable-blink-features=AutomationControlled")
-# opts.add_experimental_option("excludeSwitches", ["enable-automation"])
-# opts.add_experimental_option("useAutomationExtension", False)
-
-# service = Service(ChromeDriverManager().install())
-# driver = webdriver.Chrome(service=service, options=opts)
-# wait = WebDriverWait(driver, 30)
-
-# try:
-#     driver.get(URL)
-
-#     # ---- ENTER EMAIL ----
-#     email_input = wait.until(EC.presence_of_element_located((By.ID, "identifierId")))
-#     email_input.clear()
-#     for char in EMAIL:
-#         email_input.send_keys(char)
-#         time.sleep(0.2)
-
-#     # ---- CLICK NEXT ----
-#     next_button = wait.until(
-#         EC.element_to_be_clickable((By.XPATH, "//span[text()='Next']/parent::button"))
-#     )
-#     next_button.click()
-# import json
-# import tempfile
-# from pathlib import Path
-# from selenium import webdriver
-# from selenium.webdriver.chrome.service import Service
-# from selenium.webdriver.chrome.options import Options
-# from selenium.webdriver.common.by import By
-# from selenium.webdriver.support.ui import WebDriverWait
-# from selenium.webdriver.support import expected_conditions as EC
-# from selenium.webdriver.common.action_chains import ActionChains
 # from selenium.common.exceptions import (
-#     TimeoutException, NoSuchElementException, StaleElementReferenceException
+#     TimeoutException, NoSuchElementException, StaleElementReferenceException, WebDriverException
 # )
-# from webdriver_manager.chrome import ChromeDriverManager
+# from selenium.webdriver.common.action_chains import ActionChains
+# from selenium.webdriver.common.keys import Keys
+# try:
+#     from webdriver_manager.chrome import ChromeDriverManager
+#     HAS_WEBDRIVER_MANAGER = True
+# except Exception:
+#     HAS_WEBDRIVER_MANAGER = False
+# warnings.filterwarnings("ignore", category=UserWarning, module="urllib3")
 
-# # --- Import YOLO captcha solver (your local solver) ---
-# sys.path.append("/Users/zeinabtarek/ReCaptchaV2-DeepLearning-Solver")
-# from solver import CaptchaSolver
+ 
+# import importlib.util
+ 
+# HAS_SOLVER = False
+# CaptchaSolver = None
 
-# EMAIL = "ashish73379@gmail.com"
-# USER_DATA_DIR = tempfile.mkdtemp()
-# URL = "https://accounts.google.com/signin/v2/identifier"
-
-# # --- Chrome options & logging prefs ---
-# opts = Options()
-# opts.add_argument(f"--user-data-dir={USER_DATA_DIR}")
-# opts.add_argument("--disable-blink-features=AutomationControlled")
-# opts.add_experimental_option("excludeSwitches", ["enable-automation"])
-# opts.add_experimental_option("useAutomationExtension", False)
-
-# # Enable browser & performance logging to capture console & network info for diagnostics
-# opts.set_capability("goog:loggingPrefs", {"browser": "ALL", "performance": "ALL"})
-
-# service = Service(ChromeDriverManager().install())
-# driver = webdriver.Chrome(service=service, options=opts)
-# wait = WebDriverWait(driver, 30)
-
-# # ---- Helper utilities ----
-
-# def print_all_elements(limit=200):
-#     """Print tag, id, class for up to `limit` elements (diagnostic)."""
-#     els = driver.find_elements(By.XPATH, "//*")
-#     print(f"🖨️ Total elements on page: {len(els)} (showing up to {limit})")
-#     for i, el in enumerate(els[:limit]):
-#         try:
-#             print(f"{i:03d}: <{el.tag_name} id='{el.get_attribute('id')}' class='{el.get_attribute('class')}'>")
-#         except StaleElementReferenceException:
-#             continue
-
-# def list_iframes():
-#     frames = driver.find_elements(By.TAG_NAME, "iframe")
-#     print(f"🖼️ Found {len(frames)} iframes on page")
-#     for idx, f in enumerate(frames):
-#         print(f"  - iframe[{idx}] src: {f.get_attribute('src')}, name: {f.get_attribute('name')}, id: {f.get_attribute('id')}")
-
-# def dump_state(name):
-#     """Save page HTML and JSON attributes of relevant containers."""
-#     html_path = Path(f"{name}.html")
-#     attrs_path = Path(f"{name}_attrs.json")
-#     html_path.write_text(driver.page_source, encoding="utf-8")
-#     info = driver.execute_script("""
-#     const out = [];
-#     document.querySelectorAll('[data-is-primary-action-disabled], [data-is-secondary-action-disabled]').forEach(e => {
-#       out.push({
-#         tag: e.tagName,
-#         cls: e.getAttribute('class'),
-#         primary: e.getAttribute('data-is-primary-action-disabled'),
-#         secondary: e.getAttribute('data-is-secondary-action-disabled'),
-#         outer: e.outerHTML.slice(0,2000)
-#       });
-#     });
-#     return out;
-#     """)
-#     attrs_path.write_text(json.dumps(info, indent=2), encoding="utf-8")
-#     print(f"✅ Saved {html_path} and {attrs_path}")
-
-# def wait_for_primary_action_enabled(timeout=30, poll=0.5):
-#     """
-#     Wait until a container with data-is-primary-action-disabled becomes "false".
-#     Returns True if observed, False if timeout.
-#     """
-#     end = time.time() + timeout
-#     while time.time() < end:
-#         val = driver.execute_script(
-#             "const el = document.querySelector('.JYXaTc'); if(!el) return null; return el.getAttribute('data-is-primary-action-disabled');"
-#         )
-#         print("  debug: current data-is-primary-action-disabled ->", repr(val))
-#         if val == "false":
-#             return True
-#         time.sleep(poll)
-#     return False
-
-# def try_click_next_button():
-#     """
-#     Try several legitimate methods to locate and click the Next button.
-#     Returns True if click was attempted without raising, else False.
-#     """
-#     # 1) Attempt to find button in main DOM by text
-#     try:
-#         candidate = driver.find_element(By.XPATH, "//button[.//span[text()='Next'] or .//span[text()='التالي' ] or .//span[contains(text(),'Next')]]")
-#         print("Found Next button in main DOM.")
-#         return click_element_safe(candidate)
-#     except NoSuchElementException:
-#         print("No Next button in main DOM, will search inside iframes.")
-    
-#     # 2) Search inside iframes
-#     frames = driver.find_elements(By.TAG_NAME, "iframe")
-#     for idx, frame in enumerate(frames):
-#         try:
-#             driver.switch_to.frame(frame)
-#             # try locating the button inside this frame
-#             try:
-#                 btn = driver.find_element(By.XPATH, "//button[.//span[text()='Next'] or .//span[contains(text(),'Next')]]")
-#                 print(f"Found Next button inside iframe index {idx}. Attempting click...")
-#                 ok = click_element_safe(btn)
-#                 driver.switch_to.default_content()
-#                 return ok
-#             except NoSuchElementException:
-#                 driver.switch_to.default_content()
-#                 continue
-#         except Exception as e:
-#             print(f"Could not switch to iframe {idx}: {e}")
-#             driver.switch_to.default_content()
-#             continue
-#     print("Could not find Next button in any iframe.")
-#     return False
-
-# def click_element_safe(el):
-#     """Try ActionChains click, fallback to JS click. Return True if done."""
-#     try:
-#         # Scroll into view
-#         driver.execute_script("arguments[0].scrollIntoView({block:'center', inline:'center'});", el)
-#         # Move and click using ActionChains (genuine user-like action)
-#         ActionChains(driver).move_to_element(el).pause(0.1).click(el).perform()
-#         print("Clicked via ActionChains.")
-#         return True
-#     except Exception as e:
-#         print("ActionChains click failed:", e)
-#         try:
-#             driver.execute_script("arguments[0].click();", el)
-#             print("Clicked via JS click.")
-#             return True
-#         except Exception as e2:
-#             print("JS click also failed:", e2)
-#             return False
-
-# def print_browser_console_logs():
-#     try:
-#         logs = driver.get_log('browser')
-#         if logs:
-#             print("----- Browser console logs -----")
-#             for entry in logs[-50:]:
-#                 print(entry)
-#         else:
-#             print("No browser logs captured.")
-#     except Exception as e:
-#         print("Failed to get browser logs:", e)
-
-# # ------------------ Main flow ------------------
+ 
 
 # try:
-#     # open page
-#     driver.get(URL)
-#     print("Opened URL:", URL)
-
-#     # dump initial state
-#     dump_state("before_captcha")
-
-#     # enter email slowly (human-like pacing for diagnostics)
-#     email_input = wait.until(EC.presence_of_element_located((By.ID, "identifierId")))
-#     email_input.clear()
-#     for ch in EMAIL:
-#         email_input.send_keys(ch)
-#         time.sleep(0.05)
-#     print("✉️ Entered email")
-
-#     # click the first Next (identifierNext) - attempt clickable waiting and click
-#     try:
-#         next_button = wait.until(EC.element_to_be_clickable((By.ID, "identifierNext")))
-#         driver.execute_script("arguments[0].scrollIntoView(true);", next_button)
-#         driver.execute_script("arguments[0].click();", next_button)
-#         print("➡️ Clicked Next after email (identifierNext).")
-#     except TimeoutException:
-#         print("identifierNext not clickable by Selenium wait; trying safe click fallback.")
-#         # fallback try to find and click by visible label
-#         try_click_next_button()
-
-#     time.sleep(2)
-
-#     # initialize solver (your local implementation)
-#     solver = CaptchaSolver(driver, detector_weight="yolo_weights/yolov9e-seg.pt")
-
-#     # main loop - wait for recaptcha challenge screen or progress
-#     max_steps = 180
-#     step = 0
-#     while step < max_steps:
-#         step += 1
-#         current_url = driver.current_url
-#         print(f"[{step}] Current URL: {current_url}")
-
-#         # detect recaptcha challenge page
-#         if "v3/signin/challenge/recaptcha" in current_url or "challenge/recaptcha" in current_url:
-#             print("🔎 Captcha challenge page detected.")
-#             dump_state("before_solver_attempt")
+#     if importlib.util.find_spec("torch") is not None:
+#         sys.path.append("/Users/zeinabtarek/Downloads/scarping 3/scarping/ReCaptchaV2-DeepLearning-Solver")
+#         try:
+#             from solver import get_captcha_solver as _get_solver
+#             CaptchaSolver = _get_solver()
+#             HAS_SOLVER = True
+#         except ImportError:
 #             try:
-#                 if solver.is_captcha():
-#                     print("Solver says captcha present. Running solver.solve_captcha() ...")
-#                     solver.solve_captcha()
-#                     print("✅ Solver finished (returned control).")
-#                 else:
-#                     print("Solver reports no captcha present (unexpected).")
+#                 from solver import CaptchaSolver as _CaptchaSolver
+#                 CaptchaSolver = _CaptchaSolver
+#                 HAS_SOLVER = True
 #             except Exception as e:
-#                 print("Error while solving captcha (solver raised):", e)
-
-#             # small stabilization pause
-#             time.sleep(2)
-#             dump_state("after_solver_attempt")
-
-#             # wait for the parent container attribute to say primary action enabled
-#             enabled = wait_for_primary_action_enabled(timeout=20)
-#             if enabled:
-#                 print("Parent container reports primary action enabled.")
-#             else:
-#                 print("Parent container still reports disabled after solver.")
-
-#             # attempt to click Next (safe attempts)
-#             ok = try_click_next_button()
-#             print("Attempt to click Next returned:", ok)
-
-#             # save logs & HTML for further inspection
-#             print_browser_console_logs()
-
-#             # continue loop to see navigation
-#             time.sleep(3)
-#             continue
-
-#         # password page reached
-#         if "signin/v2/challenge/pwd" in current_url or "challenge/pwd" in current_url:
-#             print("🔑 Password page reached. Stopping loop.")
-#             dump_state("on_password_page")
-#             break
-
-#         # generic wait/inspect
-#         print("⏳ Waiting for next state (1s)...")
-#         time.sleep(1)
-
+#                 print(f"❌ Failed to import CaptchaSolver: {e}")
+#         except Exception as e:
+#             print(f"❌ Unexpected error during solver import: {e}")
 #     else:
-#         print("Reached max steps without seeing password page or resolving captcha.")
-
+#         print("⚠️ Torch not installed. CaptchaSolver unavailable.")
 # except Exception as e:
-#     print("Unhandled exception in main flow:", e)
+#     print(f"❌ Error initializing CaptchaSolver: {e}")
 
-# finally:
-#     print("Final dump & logs...")
-#     try:
-#         dump_state("final_state")
-#     except Exception as e:
-#         print("Could not dump final state:", e)
-#     try:
-#         print_browser_console_logs()
-#     except Exception:
-#         pass
-#     # If you want the browser to close automatically, uncomment:
-#     # driver.quit()
-#     print("Script finished. Check the dumped HTML/JSON and console logs for clues.")
+# if HAS_SOLVER:
+#     print("✅ CaptchaSolver is ready!")
+# else:
+#     print("⚠️ CaptchaSolver is not available. Will require manual solve.")
+
+# # --- Initialize Selenium driver ---
+# chrome_options = ChromeOptions()
+# chrome_options.add_argument("--start-maximized")
+# # Add more options as needed
+# if HAS_WEBDRIVER_MANAGER:
+#     driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+# else:
+#     driver = webdriver.Chrome(options=chrome_options)  # uses chromedriver in PATH
+
+# # Go to the login page
+# driver.get("https://accounts.google.com/signin")
+
+# # ---- Handle captcha OR go directly to password ----
+# for step in range(30):
+#     current_url = driver.current_url
+#     print(f"[{step}] Current URL: {current_url}")
+
+#     if "recaptcha" in current_url:
+#         print("🔎 Captcha challenge detected.")
+#         try:
+#             WebDriverWait(driver, 15).until(
+#                 EC.presence_of_element_located((By.CSS_SELECTOR, "iframe[src*='recaptcha']"))
+#             )
+
+#             if HAS_SOLVER:
+#                 solver = CaptchaSolver(driver)
+#                 solver.solve_captcha()
+#                 print("✅ Captcha solved automatically.")
+#             else:
+#                 print("⚠️ Manual captcha solving required. Waiting...")
+#                 WebDriverWait(driver, 300).until(
+#                     lambda d: "recaptcha" not in d.current_url
+#                 )
+
+#             # Click Next after captcha
+#             clicked = click_next(driver)
+#             if not clicked:
+#                 print("❌ All click attempts failed after captcha.")
+
+#         except Exception as e:
+#             print("⚠️ Error while solving captcha:", e)
+#             driver.save_screenshot("captcha_error.png")
+
+#         time.sleep(2)
+#         continue
+
+#     # If URL is password page
+#     if "signin/v2/challenge/pwd" in current_url:
+#         print("🔑 Password page detected. Proceeding...")
+#         break
+
+#     time.sleep(1)
+
+# # try:
+
+# #     # Check if torch is installed
+# #     if importlib.util.find_spec("torch") is not None:
+# #         # Add local solver repo to PYTHONPATH
+# #         sys.path.append("/Users/zeinabtarek/Downloads/scarping 3/scarping/ReCaptchaV2-DeepLearning-Solver")
+
+# #         try:
+# #             # Try importing lazy accessor
+# #             from solver import get_captcha_solver as _get_solver
+# #             CaptchaSolver = _get_solver()
+# #             HAS_SOLVER = True
+# #         except ImportError:
+# #             # Fallback import if accessor not present (older versions)
+# #             try:
+# #                 from solver import CaptchaSolver as _CaptchaSolver
+# #                 CaptchaSolver = _CaptchaSolver
+# #                 HAS_SOLVER = True
+# #             except Exception as e:
+# #                 print(f"❌ Failed to import CaptchaSolver: {e}")
+# #                 HAS_SOLVER = False
+# #         except Exception as e:
+# #             print(f"❌ Unexpected error during solver import: {e}")
+# #             HAS_SOLVER = False
+# #     else:
+# #         # Torch not installed, solver unavailable
+# #         HAS_SOLVER = False
+# # except Exception as e:
+# #     # Any top-level import errors
+# #     print(f"❌ Error initializing CaptchaSolver: {e}")
+# #     HAS_SOLVER = False
+
+# # Optional: report status
+# if HAS_SOLVER:
+#     print("✅ CaptchaSolver is ready!")
+# else:
+#     print("⚠️ CaptchaSolver is not available.")
+
 import sys
 import os
 import time
@@ -415,42 +177,135 @@ from selenium.common.exceptions import (
 )
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.keys import Keys
+import importlib.util
+
 try:
     from webdriver_manager.chrome import ChromeDriverManager
     HAS_WEBDRIVER_MANAGER = True
 except Exception:
     HAS_WEBDRIVER_MANAGER = False
+
 warnings.filterwarnings("ignore", category=UserWarning, module="urllib3")
 
-# 👇 Add solver repo to PYTHONPATH and try to import solver lazily.
-import importlib.util
-
-# The solver depends on heavy ML libraries (torch). Avoid importing the solver
-# package at module-import time inside the frozen exe unless those libraries are
-# actually available on the target system. Check for 'torch' first and only
-# attempt to import the solver when it is present.
+# ----------------------
+# Initialize Captcha Solver
+# ----------------------
 HAS_SOLVER = False
 CaptchaSolver = None
+
 try:
     if importlib.util.find_spec("torch") is not None:
-        # Only add the local solver repo to path and import it when torch exists
-        sys.path.append(r"C:\Users\dell\Downloads\scarping\scarping\ReCaptchaV2-DeepLearning-Solver")
-        # Prefer the package-level accessor which performs a lazy import
+        sys.path.append("/Users/zeinabtarek/Downloads/scarping 3/scarping/ReCaptchaV2-DeepLearning-Solver")
         try:
             from solver import get_captcha_solver as _get_solver
             CaptchaSolver = _get_solver()
             HAS_SOLVER = True
-        except Exception:
-            # Fallback import if accessor not present (older copies)
-            from solver import CaptchaSolver as _CaptchaSolver
-            CaptchaSolver = _CaptchaSolver
-            HAS_SOLVER = True
+        except ImportError:
+            try:
+                from solver import CaptchaSolver as _CaptchaSolver
+                CaptchaSolver = _CaptchaSolver
+                HAS_SOLVER = True
+            except Exception as e:
+                print(f"❌ Failed to import CaptchaSolver: {e}")
+        except Exception as e:
+            print(f"❌ Unexpected error during solver import: {e}")
     else:
-        # PyTorch not present — mark solver as unavailable without importing it.
-        HAS_SOLVER = False
-except Exception:
-    # Any import-time error should not crash the module import; keep solver disabled.
-    HAS_SOLVER = False
+        print("⚠️ Torch not installed. CaptchaSolver unavailable.")
+except Exception as e:
+    print(f"❌ Error initializing CaptchaSolver: {e}")
+
+print("✅ CaptchaSolver is ready!" if HAS_SOLVER else "⚠️ CaptchaSolver is not available. Manual solve may be required.")
+
+# ----------------------
+# Initialize Selenium driver
+# ----------------------
+chrome_options = ChromeOptions()
+chrome_options.add_argument("--start-maximized")
+if HAS_WEBDRIVER_MANAGER:
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
+else:
+    driver = webdriver.Chrome(options=chrome_options)  # uses chromedriver in PATH
+
+# ----------------------
+# Helper function to wait for element
+# ----------------------
+def wait_for_element(driver, by, value, timeout=5):
+    try:
+        return WebDriverWait(driver, timeout).until(
+            EC.presence_of_element_located((by, value))
+        )
+    except TimeoutException:
+        return None
+
+# ----------------------
+# Start Login Flow
+# ----------------------
+driver.get("https://accounts.google.com/signin")
+time.sleep(2)  # give the page a moment to load
+
+# --- Step 1: Enter email ---
+email_input = wait_for_element(driver, By.ID, "identifierId", timeout=15)
+if not email_input:
+    print("❌ Email input not found.")
+    driver.quit()
+    sys.exit(1)
+
+email_input.send_keys("your_email@gmail.com")
+driver.find_element(By.ID, "identifierNext").click()
+print("📧 Email submitted, waiting for next step...")
+
+# --- Step 2: Handle captcha OR password ---
+for step in range(30):
+    current_url = driver.current_url
+    print(f"[{step}] Current URL: {current_url}")
+
+    # If captcha detected
+    if "recaptcha" in current_url:
+        print("🔎 Captcha challenge detected.")
+        try:
+            captcha_iframe = wait_for_element(driver, By.CSS_SELECTOR, "iframe[src*='recaptcha']", timeout=15)
+            if captcha_iframe:
+                if HAS_SOLVER:
+                    solver = CaptchaSolver(driver)
+                    solver.solve_captcha()
+                    print("✅ Captcha solved automatically.")
+                else:
+                    print("⚠️ Manual captcha solving required. Waiting...")
+                    WebDriverWait(driver, 300).until(
+                        lambda d: not wait_for_element(d, By.CSS_SELECTOR, "iframe[src*='recaptcha']", timeout=2)
+                    )
+            # Optional: click next after captcha
+            try:
+                click_next(driver)
+            except Exception:
+                pass
+        except Exception as e:
+            print("⚠️ Error while solving captcha:", e)
+            driver.save_screenshot("captcha_error.png")
+        time.sleep(2)
+        continue
+
+    # If password page detected
+    if "signin/v2/challenge/pwd" in current_url:
+        print("🔑 Password page detected. Proceeding...")
+        password_input = wait_for_element(driver, By.NAME, "password", timeout=15)
+        if password_input:
+            password_input.send_keys("your_password")
+            driver.find_element(By.ID, "passwordNext").click()
+            print("✅ Password submitted, login flow complete.")
+        else:
+            print("❌ Password input not found, possibly blocked by captcha.")
+        break
+
+    time.sleep(1)
+
+# ----------------------
+# Optional: report CaptchaSolver status
+# ----------------------
+if HAS_SOLVER:
+    print("✅ CaptchaSolver ready and available.")
+else:
+    print("⚠️ CaptchaSolver not available, manual solve may be needed.")
 
 
 # Helper to attempt runtime import of solver with diagnostics. Returns a class or None.
