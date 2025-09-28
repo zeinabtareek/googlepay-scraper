@@ -176,61 +176,15 @@ def run_scraper_in_process(email, password, pages, auto_bypass):
         logs.append(f"🤖 Auto-bypass: {auto_bypass}")
         logs.append("-" * 50)
         
-        # Try multiple import methods
-        scraper_function = None
-        
-        # Method 1: Direct import
+        # Try to import and run scraper
         try:
             import scraping
             if hasattr(scraping, 'run_scraper'):
-                scraper_function = scraping.run_scraper
-                logs.append("✅ Imported scraping module successfully")
-        except ImportError as e:
-            logs.append(f"⚠️ Direct import failed: {str(e)}")
-        
-        # Method 2: Importlib
-        if not scraper_function:
-            try:
-                import importlib.util
-                import sys
-                
-                spec = importlib.util.spec_from_file_location("scraping", "scraping.py")
-                if spec and spec.loader:
-                    scraping = importlib.util.module_from_spec(spec)
-                    sys.modules["scraping"] = scraping
-                    spec.loader.exec_module(scraping)
-                    
-                    if hasattr(scraping, 'run_scraper'):
-                        scraper_function = scraping.run_scraper
-                        logs.append("✅ Imported via importlib successfully")
-            except Exception as e:
-                logs.append(f"⚠️ Importlib import failed: {str(e)}")
-        
-        # Method 3: Exec file
-        if not scraper_function:
-            try:
-                # Read and execute the scraping file
-                with open('scraping.py', 'r', encoding='utf-8') as f:
-                    scraping_code = f.read()
-                
-                # Create a namespace for execution
-                scraping_namespace = {}
-                exec(scraping_code, scraping_namespace)
-                
-                if 'run_scraper' in scraping_namespace:
-                    scraper_function = scraping_namespace['run_scraper']
-                    logs.append("✅ Loaded via exec successfully")
-            except Exception as e:
-                logs.append(f"⚠️ Exec method failed: {str(e)}")
-        
-        # Run the scraper if we found it
-        if scraper_function:
-            try:
                 # Capture output
                 output_buffer = io.StringIO()
                 with contextlib.redirect_stdout(output_buffer), contextlib.redirect_stderr(output_buffer):
                     try:
-                        scraper_function(email, password, pages, auto_bypass)
+                        scraping.run_scraper(email, password, pages, auto_bypass)
                         logs.append("✅ Scraper completed successfully!")
                         success = True
                     except SystemExit as se:
@@ -241,9 +195,7 @@ def run_scraper_in_process(email, password, pages, auto_bypass):
                         else:
                             logs.append(f"❌ Exit code: {code}")
                     except Exception as e:
-                        logs.append(f"❌ Runtime error: {str(e)}")
-                        import traceback
-                        logs.append(f"Stack trace: {traceback.format_exc()}")
+                        logs.append(f"❌ Error: {str(e)}")
                 
                 # Add captured output to logs
                 output = output_buffer.getvalue()
@@ -251,17 +203,15 @@ def run_scraper_in_process(email, password, pages, auto_bypass):
                     for line in output.strip().split('\n'):
                         if line.strip():
                             logs.append(line)
-                            
-            except Exception as e:
-                logs.append(f"❌ Error running scraper: {str(e)}")
-        else:
-            logs.append("❌ Could not load scraper function with any method")
-            logs.append("💡 Make sure scraping.py exists and contains run_scraper function")
+            else:
+                logs.append("⚠️ Scraper function not available.")
+        except ImportError:
+            logs.append("⚠️ Scraper module not available.")
+        except Exception as e:
+            logs.append(f"❌ Import error: {str(e)}")
             
     except Exception as e:
         logs.append(f"💥 Unexpected error: {str(e)}")
-        import traceback
-        logs.append(f"Full traceback: {traceback.format_exc()}")
     
     return success, logs
 
