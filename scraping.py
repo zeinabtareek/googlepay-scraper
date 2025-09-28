@@ -40,7 +40,7 @@ CaptchaSolver = None
 try:
     if importlib.util.find_spec("torch") is not None:
         # Only add the local solver repo to path and import it when torch exists
-        sys.path.append(r"ReCaptchaV2-DeepLearning-Solver")
+        sys.path.append("ReCaptchaV2-DeepLearning-Solver")
         # Prefer the package-level accessor which performs a lazy import
         try:
             from solver import get_captcha_solver as _get_solver
