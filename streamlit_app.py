@@ -323,20 +323,6 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-# Add debugging info
-st.markdown("### 🔍 Debug Information")
-col1, col2 = st.columns(2)
-
-with col1:
-    st.write("**Current Directory:**", os.getcwd())
-    st.write("**Files in Directory:**", os.listdir("."))
-
-with col2:
-    scraping_exists = os.path.exists("scraping.py")
-    st.write("**Scraping.py exists:**", "✅ Yes" if scraping_exists else "❌ No")
-    if scraping_exists:
-        st.write("**File size:**", f"{os.path.getsize('scraping.py')} bytes")
-
 # Add form management
 col1, col2 = st.columns([3, 1])
 
