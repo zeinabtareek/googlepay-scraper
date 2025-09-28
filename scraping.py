@@ -195,7 +195,7 @@ CaptchaSolver = None
 
 try:
     if importlib.util.find_spec("torch") is not None:
-        sys.path.append("/Users/zeinabtarek/Downloads/scarping 3/scarping/ReCaptchaV2-DeepLearning-Solver")
+        sys.path.append("ReCaptchaV2-DeepLearning-Solver")
         try:
             from solver import get_captcha_solver as _get_solver
             CaptchaSolver = _get_solver()
